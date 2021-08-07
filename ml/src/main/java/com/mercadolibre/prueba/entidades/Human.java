@@ -69,37 +69,41 @@ public class Human implements Serializable{
 		this.id = id;
 	}
 
-	@Override
+	
+    @Override
+    public String toString() {
+        return "Human{" + "dna=" + dna + ", mutant=" + mutant +'}';
+    }
+    
+    @Override
     public int hashCode() {
         int hash = 5;
         hash = 13 * hash + Arrays.deepHashCode(this.dna);
         return hash;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Human other = (Human) obj;
-        if (!Arrays.deepEquals(this.dna, other.dna)) {
-            return false;
-        }
-        return true;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Human other = (Human) obj;
+		if (!Arrays.equals(dna, other.dna))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (mutant != other.mutant)
+			return false;
+		return true;
+	}
 
-    @Override
-    public String toString() {
-        return "Human{" + "dna=" + dna + ", mutant=" + mutant +'}';
-    }
-    
-    public String hexIdGenerator() {
+	public String hexIdGenerator() {
     	return Integer.toHexString(hashCode()).toString();
     }
 

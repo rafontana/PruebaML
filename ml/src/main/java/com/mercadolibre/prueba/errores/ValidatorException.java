@@ -12,12 +12,10 @@ package com.mercadolibre.prueba.errores;
 public class ValidatorException extends Exception{
    
     private String message;
-    public ValidatorException(){
-        super();
-    }
+
     public ValidatorException(String message){
         super();
-        this.message=message;
+        this.setMessage(message);
     }
     /**
      * @return the message

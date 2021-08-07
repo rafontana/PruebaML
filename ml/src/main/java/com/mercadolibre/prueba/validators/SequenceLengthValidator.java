@@ -16,7 +16,7 @@ public class SequenceLengthValidator extends AbstractValidator {
     public boolean validate(Human human) throws ValidatorException{
         super.validate(human);
         int secuencesLength = human.getDna().length;
-        Long ret = Arrays.stream(human.getDna()).parallel().filter(x -> x.length()!=secuencesLength).count();
+        Long ret = Arrays.stream(human.getDna()).filter(x -> x.length()!=secuencesLength).count();
         return ret.intValue()==0;
 
     }

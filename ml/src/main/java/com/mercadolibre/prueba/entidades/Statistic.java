@@ -44,8 +44,6 @@ public class Statistic {
 		return ratio;
 	}
 
-
-
 	public void setRatio(BigDecimal ratio) {
 		this.ratio = ratio;
 	}
@@ -53,7 +51,7 @@ public class Statistic {
 	public void calculateRatio() {		
 		BigDecimal mutants = new BigDecimal(count_mutant_dna);
 		BigDecimal humans = new BigDecimal(count_human_dna);
-	    ratio = (humans.compareTo(BigDecimal.ZERO) != 0) ? mutants.divide(humans, 1,RoundingMode.UNNECESSARY) : new BigDecimal("0.0");
+	    ratio = (humans.compareTo(BigDecimal.ZERO) != 0) ? mutants.divide(humans, 1,RoundingMode.HALF_DOWN) : new BigDecimal("0.0");
 	
 	}
 }

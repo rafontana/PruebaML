@@ -28,7 +28,7 @@ public class DNAAllowedTypesValidator extends AbstractValidator {
     public boolean validate(Human human) throws ValidatorException {
         super.validate(human);
         Pattern pattern = Pattern.compile(MutantConst.REGEX_PATTERN);
-        List<String> matching = Arrays.stream(human.getDna()).parallel()
+        List<String> matching = Arrays.stream(human.getDna())
                 .filter(pattern.asPredicate())
                 .collect(Collectors.toList());
         	return matching.size() == human.getDna().length;

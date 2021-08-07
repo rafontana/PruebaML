@@ -33,11 +33,12 @@ public class ProspectController {
 	@Autowired
 	private Statistic statistic;
 
-	private boolean isMutant;
+	
 
 	@RequestMapping(value = "/mutant/", method = RequestMethod.POST)
 	public ResponseEntity<String> prospectRequest(@RequestBody DNAMessage dna) {
 		{
+			boolean isMutant;
 			ResponseEntity<String> responseEntity;
 
 			try {
@@ -47,7 +48,9 @@ public class ProspectController {
 				isMutant = prospectService.mainService(human);
 				human.setMutant(isMutant);
 				human.setId(human.hexIdGenerator());
+				System.out.println(human);
 				humanRepository.save(human);
+				
 
 				if (isMutant) {
 					responseEntity = new ResponseEntity<>(HttpStatus.FORBIDDEN);

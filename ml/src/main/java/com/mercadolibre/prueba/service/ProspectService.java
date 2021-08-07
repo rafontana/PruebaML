@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.mercadolibre.prueba.controller.ProspectController;
 import com.mercadolibre.prueba.entidades.Human;
 import com.mercadolibre.prueba.errores.MainServiceException;
 import com.mercadolibre.prueba.errores.ProcessorException;
@@ -50,35 +49,35 @@ public class ProspectService {
 	 */
 	public boolean mainService(Human human) throws MainServiceException {
 
+
 		try {
 			// Validaciones
 			// Largo de cada secuencia sean iguales
-			if(! sequenceLengthValidator.validate(human)) {
-				throw new ValidatorException("Unequal dna dimension chain");
+			if (!sequenceLengthValidator.validate(human)) {
+				throw new MainServiceException("Unequal dna dimension chain");
 			}
 
 			// cantidad de sequencias mayor a 4
-			if(! minLengthValidator.validate(human)) {
-				throw new ValidatorException("Short dna chain");
+			if (!minLengthValidator.validate(human)) {
+				throw new MainServiceException("Short dna chain");
 			}
 			// pasa a Mayusculas para matchear pattern
 			toUppercaseProcessor.process(human);// pasa a mayusculas
 
 			// valida que solo sean A C T G
-			if(! dNAAllowedTypesValidator.validate(human)) {
-				throw new ValidatorException("Not A C T G Types");
+			if (!dNAAllowedTypesValidator.validate(human)) {
+				throw new MainServiceException("Not A C T G Types");
 			}
 
 			// inicializa Status y ocurrencias
 			status.setConditionReached(false);
 			occurrencesAccumulator = 0;
-
 			return isMutant(human.getDna());
 
 		} catch (ProcessorException | ValidatorException ex) {
-			
+
 			Logger.getLogger(ProspectService.class.getName()).log(Level.SEVERE, null, ex);
-			throw new MainServiceException("Exception in Main Service: "+ ex.getMessage());
+			throw new MainServiceException("Exception in Main Service: " + ex.getMessage());
 
 		}
 
@@ -87,30 +86,28 @@ public class ProspectService {
 	/**
 	 * Main method isMutant
 	 * <p>
+	 * 
 	 * @param dna of type String[] represents dna sequence
 	 */
 	public boolean isMutant(String[] dna) { // ORQUESTA TODAS LAS OPERACIONES
 
-		status.setConditionReached(false);
-		occurrencesAccumulator = 0;
-
-		//1 -  PROCESO ROWS
+		// 1 - PROCESO ROWS
 		patternsChecker(dna);
 		if (status.isConditionReached())
 			return true;
 
-		//2 - PROCESO COLS
+		// 2 - PROCESO COLS
 		String[] cols = retrieveColumns(dna);
 		patternsChecker(cols);// Pasando cols
 		if (status.isConditionReached())
 			return true;
 
-		//3 - DEFINO MATRIZ
-	    char[][] matrix = defineMatrix(dna);
+		// 3 - DEFINO MATRIZ
+		char[][] matrix = defineMatrix(dna);
 		int size = matrix.length;
 		String[] param = new String[1];
 
-		//4 -  PROCESO DIAGONAL MAYOR DE IZQ A DERECHA
+		// 4 - PROCESO DIAGONAL MAYOR DE IZQ A DERECHA
 		List<Position> majorDiagonalLeftToRight = diagonalLeftToRight(size);
 		String diagonalLeftToRight = retrieveFromMatrix(majorDiagonalLeftToRight, matrix);
 		param[0] = diagonalLeftToRight;
@@ -118,7 +115,7 @@ public class ProspectService {
 		if (status.isConditionReached())
 			return true;
 
-		//5 -  PROCESO DIAGONALES DERIVADAS DE LA MAYOR DE IZQ A DERECHA
+		// 5 - PROCESO DIAGONALES DERIVADAS DE LA MAYOR DE IZQ A DERECHA
 		procesLeftToRightRight(majorDiagonalLeftToRight, matrix);
 		if (status.isConditionReached())
 			return true;
@@ -127,7 +124,7 @@ public class ProspectService {
 		if (status.isConditionReached())
 			return true;
 
-		//6 -  PROCESO DIAGONAL MAYOR DE DERECHA A IZQ
+		// 6 - PROCESO DIAGONAL MAYOR DE DERECHA A IZQ
 		List<Position> majorDiagonaliagonalRightToLeft = diagonalRightToLeft(size);
 		String diagonalRightToLeft = retrieveFromMatrix(majorDiagonaliagonalRightToLeft, matrix);
 		param[0] = diagonalRightToLeft;
@@ -135,7 +132,7 @@ public class ProspectService {
 		if (status.isConditionReached())
 			return true;
 
-		//7 -  PROCESO DIAGONALES DERIVADAS DE LA MAYOR DE DERECHA A IZQ
+		// 7 - PROCESO DIAGONALES DERIVADAS DE LA MAYOR DE DERECHA A IZQ
 		procesRightToLeftLeft(majorDiagonaliagonalRightToLeft, matrix);
 		if (status.isConditionReached())
 			return true;
@@ -148,34 +145,94 @@ public class ProspectService {
 	}
 
 	private void patternsChecker(String[] dna) {
-		
+		int dnaLength = dna[0].length();
+		boolean activateExtendedSearch = (dnaLength >= MutantConst.MIN_EXTENDED_LENGTH);
+
 		Pattern pattern = Pattern.compile(MutantConst.PATTERN_AAAA);
-		occurrencesAccumulator += Arrays.stream(dna).parallel().filter(pattern.asPredicate()).count();
+		List<String> list = Arrays.stream(dna).filter(pattern.asPredicate()).map(x -> new String(x))
+				.collect(Collectors.toList());
+		occurrencesAccumulator += list.size();
 		if (testStatus()) {
 			return;
 		}
-		
+		if (activateExtendedSearch) {
+			int res = list.size();
+			if (res == MutantConst.PATTERNS_MIN_VALID_OCCURRENCE && dnaLength >= MutantConst.MIN_EXTENDED_LENGTH) {
+				extendedSearch(list.get(0), MutantConst.PATTERN_AAAA);
+				if (testStatus()) {
+					return;
+				}
+
+			}
+		}
+
 		pattern = Pattern.compile(MutantConst.PATTERN_CCCC);
-		occurrencesAccumulator += Arrays.stream(dna).parallel().filter(pattern.asPredicate()).count();
+		list = Arrays.stream(dna).filter(pattern.asPredicate()).map(x -> new String(x)).collect(Collectors.toList());
+		occurrencesAccumulator += list.size();
 
 		if (testStatus()) {
 			return;
+		}
+
+		if (activateExtendedSearch) {
+			int res = list.size();
+			if (res == MutantConst.PATTERNS_MIN_VALID_OCCURRENCE && dnaLength >= MutantConst.MIN_EXTENDED_LENGTH) {
+				extendedSearch(list.get(0), MutantConst.PATTERN_CCCC);
+				if (testStatus()) {
+					return;
+				}
+
+			}
 		}
 
 		pattern = Pattern.compile(MutantConst.PATTERN_TTTT);
-		occurrencesAccumulator += Arrays.stream(dna).parallel().filter(pattern.asPredicate()).count();
+		list = Arrays.stream(dna).filter(pattern.asPredicate()).map(x -> new String(x)).collect(Collectors.toList());
+		occurrencesAccumulator += list.size();
 
 		if (testStatus()) {
 			return;
+		}
+		if (activateExtendedSearch) {
+			int res = list.size();
+			if (res == MutantConst.PATTERNS_MIN_VALID_OCCURRENCE && dnaLength >= MutantConst.MIN_EXTENDED_LENGTH) {
+				extendedSearch(list.get(0), MutantConst.PATTERN_TTTT);
+				if (testStatus()) {
+					return;
+				}
+			}
 		}
 
 		pattern = Pattern.compile(MutantConst.PATTERN_GGGG);
-		occurrencesAccumulator += Arrays.stream(dna).parallel().filter(pattern.asPredicate()).count();
+		list = Arrays.stream(dna).filter(pattern.asPredicate()).map(x -> new String(x)).collect(Collectors.toList());
+		occurrencesAccumulator += list.size();
 
 		if (testStatus()) {
 			return;
 		}
 
+		if (activateExtendedSearch) {
+			int res = list.size();
+			if (res == MutantConst.PATTERNS_MIN_VALID_OCCURRENCE && dnaLength >= MutantConst.MIN_EXTENDED_LENGTH) {
+				extendedSearch(list.get(0), MutantConst.PATTERN_GGGG);
+				if (testStatus()) {
+					return;
+				}
+
+			}
+
+		}
+	}
+
+	private void extendedSearch(String content, String extPattern) {
+		int pos = content.indexOf(extPattern);
+		if (content.length() - (pos + MutantConst.MIN_SEQUENCE_LENGTH) >= MutantConst.MIN_SEQUENCE_LENGTH) {
+			String[] subStringDNA = new String[1];
+			subStringDNA[0] = content.substring(pos + MutantConst.MIN_SEQUENCE_LENGTH, content.length());
+			Pattern pattern = Pattern.compile(extPattern);
+			List<String> list = Arrays.stream(subStringDNA).filter(pattern.asPredicate()).map(x -> new String(x))
+					.collect(Collectors.toList());
+			occurrencesAccumulator += list.size();
+		}
 	}
 
 	private boolean testStatus() {
@@ -195,13 +252,12 @@ public class ProspectService {
 	}
 
 	private String processColumns(String[] dna, int pos) {
-		List<Character> lista = Arrays.stream(dna).parallel()
-				.map(x -> x.charAt(pos)).collect(Collectors.toList());
+		List<Character> lista = Arrays.stream(dna).map(x -> x.charAt(pos)).collect(Collectors.toList());
 
 		StringBuilder builder = new StringBuilder();
 		lista.forEach(ch -> builder.append(ch));
 		return builder.toString();
-	} 
+	}
 
 	private char[][] defineMatrix(String[] dna) {
 		int size = dna.length;
@@ -272,28 +328,24 @@ public class ProspectService {
 	}
 
 	private List<Position> incrementCol(List<Position> positions) {
-		positions.stream().parallel().forEach(p -> ((Position) p).incrementCol());
+		positions.stream().forEach(p -> ((Position) p).incrementCol());
 		return positions;
 	}
 
 	private List<Position> incrementRow(List<Position> positions) {
-		positions.stream().parallel().forEach(p -> ((Position) p).incrementRow());
+		positions.stream().forEach(p -> ((Position) p).incrementRow());
 		return positions;
 	}
 
 	private List<Position> decrementCol(List<Position> positions) {
-		positions.stream().parallel().forEach(p -> ((Position) p).decrementCol());
+		positions.stream().forEach(p -> ((Position) p).decrementCol());
 		return positions;
 	}
 
-	private List<Position> decrementRow(List<Position> positions) {
-		positions.stream().parallel().forEach(p -> ((Position) p).decrementRow());
-		return positions;
-	}
 
 	private String retrieveFromMatrix(List<Position> positions, char[][] matrix) {
 		StringBuilder builder = new StringBuilder();
-		positions.stream().parallel().forEach(p -> builder.append(matrix[p.getRow()][p.getCol()]));
+		positions.stream().forEach(p -> builder.append(matrix[p.getRow()][p.getCol()]));
 		return builder.toString();
 
 	}

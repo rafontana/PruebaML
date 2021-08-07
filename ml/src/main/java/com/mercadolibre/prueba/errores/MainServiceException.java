@@ -4,13 +4,10 @@ public class MainServiceException extends Throwable{
 
 	 private String message;
 	 
-	    public MainServiceException(){
-	        super();
-	    }
-	    
+    
 	    public MainServiceException(String message){
 	        super();
-	        this.message=message;
+	        this.setMessage(message);
 	    }
 	    /**
 	     * @return the message

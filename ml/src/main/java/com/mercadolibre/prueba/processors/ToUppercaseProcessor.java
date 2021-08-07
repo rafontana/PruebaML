@@ -27,7 +27,7 @@ public class ToUppercaseProcessor extends AbstractValidator implements Processab
     public boolean process(Human human)throws ProcessorException {
         try {
             this.validate(human);
-            List<String> listaDNA = Arrays.stream(human.getDna()).parallel().map(x -> x.toUpperCase()).collect(Collectors.toList());
+            List<String> listaDNA = Arrays.stream(human.getDna()).map(x -> x.toUpperCase()).collect(Collectors.toList());
             String[] modifiedDNA = listaDNA.toArray(new String[listaDNA.size()]);
             human.setDna(modifiedDNA);
             return true;

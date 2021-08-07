@@ -11,12 +11,10 @@ package com.mercadolibre.prueba.errores;
  */
 public class ProcessorException extends Exception{
     private String message;
-    public ProcessorException(){
-        super();
-    }
+
     public ProcessorException(String message){
         super();
-        this.message=message;
+        this.setMessage(message);
     }
     /**
      * @return the message

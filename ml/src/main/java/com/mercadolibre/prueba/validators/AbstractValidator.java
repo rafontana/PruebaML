@@ -5,6 +5,8 @@
  */
 package com.mercadolibre.prueba.validators;
 
+import org.springframework.stereotype.Service;
+
 import com.mercadolibre.prueba.entidades.Human;
 import com.mercadolibre.prueba.errores.ValidatorException;
 import com.mercadolibre.prueba.interfaces.Validable;
@@ -13,6 +15,7 @@ import com.mercadolibre.prueba.interfaces.Validable;
  *
  * @author rafon
  */
+
 public class AbstractValidator implements Validable{
 
     @Override

@@ -12,7 +12,10 @@ package com.mercadolibre.prueba.utils;
 public class MutantConst {
 
     public static final int MIN_SEQUENCE_LENGTH = 4;
+    public static final int MIN_EXTENDED_LENGTH = 8;
     public static final int PATTERNS_COUNT = 2;
+    public static final int PATTERNS_MIN_VALID_OCCURRENCE = 1;
+    public static final int PATTERNS_SIZE = 4;
     public static final String PATTERN_AAAA = "AAAA";
     public static final String PATTERN_CCCC = "CCCC";
     public static final String PATTERN_TTTT = "TTTT";

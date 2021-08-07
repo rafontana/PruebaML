@@ -15,9 +15,6 @@ import com.mercadolibre.prueba.entidades.Human;
 @CrossOrigin(value={})
 public interface HumanRepository extends MongoRepository<Human,Serializable>{
 	
-//	@RestResource(path="mutant", rel="mutant")
-//	public List<Human> findByMutant(@Param("mutant")boolean mutant);
-	
 	@RestResource(path="mutant", rel="mutant")
 	public Long countByMutant(@Param("mutant")boolean mutant);
 
