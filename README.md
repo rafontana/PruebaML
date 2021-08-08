@@ -57,8 +57,9 @@ Ir a la opción new --> HttpRequest.<br/>
 <br/><br/>
 Con respuesta 200 OK cuando es humano<br/>
 ![imagen](./images/respuesta-humano.jpg)
+
 Con respuesta 403 Forbidden cuando es mutante<br/>
-![imagen](./images/respuesta-mutante.jpg)
+![imagen](./images/respuesta-mutant.jpg)
 
 
 #### Code Coverage
