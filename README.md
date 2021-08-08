@@ -74,11 +74,11 @@ Los resultados de las corridas se adjuntan en las siguientes imágenes:<br/>
 
 #### Vista General del sistema
 
-##### Diagrama de clases:
+##### Diagrama de clases
 
 ![imagen](./images/DiagramaGeneral.jpg)
 
-##### Validadores y Procesador:
+##### Validadores y Procesador
 
 ![imagen](./images/Validators_Processors.jpg)
 
@@ -98,5 +98,6 @@ Con la herramienta RESTful Stress se hizo una prueba de 10000 (diez mil iteracio
 ##### Estadísticas stats/
 ![imagen](./images/RESTStress-Stats2.jpg)
 <br/>
-<br/>
+#### Conclusiones
+El servicio trabaja sobre un container, teniendo en cuenta las apreciaciones de la letra que plantea concurrencia de request masivos deberíamos hacer clustering del servicio administrado por un load balancer de modo de escalar de forma horizontal el servicio y si llegado el caso el cuello de botella se presenta sobre la base de datos se puede hacer un "Sharding" o partición sobre la misma para administrar las peticiones de modo diferenciado.
 
