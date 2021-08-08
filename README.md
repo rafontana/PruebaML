@@ -43,6 +43,18 @@ MongoDB nos pide para tal fin que el registro tenga un id el cual generamos a pa
 - [Endpoint mutante](http://35.199.98.123:8080/ml/mutant/).
 - [Endpoint estadísticas](http://35.199.98.123:8080/ml/stats)
 
+#### Como ejecutar la aplicación
+Descargar la herramienta  [Postman Canary](https://www.postman.com/downloads/canary/) desde este link.<br/><br/>
+Ir a la opción new --> HttpRequest.<br/>
+1) Seleccionar Method<br/>
+2) Cargar Endpoint<br/>
+3) Seleccionar tab Body<br/>
+4) Seleccionar formato Json<br/>
+5) Cargar mensaje en formato Json<br/>
+6) Enviar<br/>
+![imagen](./images/postmanCarga.jpg)
+
+
 #### Code Coverage
 Se utilizaron 2 Herramientas de de code coverage, por un lado el plugin de JUnit para ir ejecutando y consultando en tiempo de desarrollo la cobertura de cada Test y por otro lado se adjunta el plugin Jacoco que está incluído en el pom del proyecto de modo que quien desee puede correrlo sin necesidad de un IDE de desarrollo, solo necesita tener instalado Maven y el servicio de MongoDB levantado (en nuestro caso la instalación utiliza los datos default de puerto 27017 y se agregaron los siguientes datos: usr:”admin”, pwd:”admin” y la bbdd:”mutants”, de todas formas es configurable desde el archivo src/main/resources/application.properties).<br/>
 Ya hay en la carpeta documents una sub carpeta Jacoco que se puede descargar y posee el reporte en formato html para poder hacer drill down por componente.<br/>
