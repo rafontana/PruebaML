@@ -8,4 +8,4 @@ Se puede ver una version estable del proyecto aqui:
 - [Endpoint estadísticas](http://35.199.98.123:8080/ml/stats)
 
 ![imagen](./images/prueba.jpg)
-[Aqui](/documents/Examen Mercadolibre  - Mutantes.pdf){width=100% height=400}
+[![codecov](https://codecov.io/gh/amcomaschi/mutants/branch/master/graph/badge.svg)](./documents/Examen Mercadolibre  - Mutantes.pdf)
