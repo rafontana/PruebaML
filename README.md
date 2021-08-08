@@ -41,8 +41,9 @@ MongoDB nos pide para tal fin que el registro tenga un id el cual generamos a pa
 
 
 #### Code Coverage
-Se utilizaron 2 Herramientas de de code coverage, por un lado el plugin de JUnit para ir ejecutando y consultando en tiempo de desarrollo la cobertura de cada Test y por otro lado se adjunta el plugin Jacoco que está incluído en el pom del proyecto de modo que quien desee puede correrlo sin necesidad de un IDE de desarrollo, solo necesita tener instalado Maven y el servicio de MongoDB levantado (en nuestro caso la instalación utiliza los datos default de puerto 27017 y se agregaron los siguientes datos: usr:”admin”, pwd:”admin”, de todas formas es configurable desde el archivo src/main/resources/application.properties).
-Para tal fin, ejecutar en el path raíz del proyecto donde se ubica el archivo pom el siguiente comando:<br/><br/>
+Se utilizaron 2 Herramientas de de code coverage, por un lado el plugin de JUnit para ir ejecutando y consultando en tiempo de desarrollo la cobertura de cada Test y por otro lado se adjunta el plugin Jacoco que está incluído en el pom del proyecto de modo que quien desee puede correrlo sin necesidad de un IDE de desarrollo, solo necesita tener instalado Maven y el servicio de MongoDB levantado (en nuestro caso la instalación utiliza los datos default de puerto 27017 y se agregaron los siguientes datos: usr:”admin”, pwd:”admin” y la bbdd:”mutants”, de todas formas es configurable desde el archivo src/main/resources/application.properties).<br/>
+Ya hay en la carpeta documents una sub carpeta Jacoco que se puede descargar y posee el reporte en formato html para poder hacer drill down por componente.<br/>
+Para generar el reporte, ejecutar en el path raíz del proyecto donde se ubica el archivo pom el siguiente comando:<br/><br/>
 ```"mvn clean test jacoco:report" ```  <br/> <br/>
 El reporte se generará en la carpeta target/site/Jacoco
 Tener en cuenta que para ejecutar el reporte se debe cambiar dentro del pom en la siguiente entrada de Surefire
