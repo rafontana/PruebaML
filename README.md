@@ -46,13 +46,19 @@ MongoDB nos pide para tal fin que el registro tenga un id el cual generamos a pa
 #### Como ejecutar la aplicación
 Descargar la herramienta  [Postman Canary](https://www.postman.com/downloads/canary/) desde este link.<br/><br/>
 Ir a la opción new --> HttpRequest.<br/>
-1) Seleccionar Method<br/>
+1) Seleccionar Method ("POST" para /mutant/ y "GET" para /stats)<br/>
 2) Cargar Endpoint<br/>
 3) Seleccionar tab Body<br/>
 4) Seleccionar formato Json<br/>
 5) Cargar mensaje en formato Json<br/>
 6) Enviar<br/>
+
 ![imagen](./images/postmanCarga.jpg)
+<br/><br/>
+Con respuesta 200 OK cuando es humano<br/>
+![imagen](./images/respuesta-humano.jpg)
+Con respuesta 403 Forbidden cuando es mutante<br/>
+![imagen](./images/respuesta-mutante.jpg)
 
 
 #### Code Coverage
