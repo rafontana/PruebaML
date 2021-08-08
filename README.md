@@ -64,5 +64,15 @@ JUnit:<br/>
 Jacoco:<br/>
 ![imagen](./images/jacoco.jpg)<br/>
 
+#### Vista General del sistema
+Diagrama de clases:<br/><br/>
+![imagen](./images/DiagramaGeneral.jpg)<br/><br/>
+#### Vista General del sistema
+Validadores y Procesador:<br/><br/>
+![imagen](./images/Validators_Processors.jpg)<br/><br/>
 
+Jacoco:<br/>
+![imagen](./images/jacoco.jpg)<br/>
+![imagen](./images/letra1.jpg)
+![imagen](./images/letra2.jpg)
 
