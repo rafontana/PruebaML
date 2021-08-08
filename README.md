@@ -61,7 +61,7 @@ Con respuesta 200 OK cuando es humano<br/>
 Con respuesta 403 Forbidden cuando es mutante<br/>
 ![imagen](./images/respuesta-mutant.jpg)
 
-Para servicio /stats se utiliza GET y el servicio responde con un Json<br/>
+Para el servicio /stats se utiliza "GET" y el servicio responde con un Json <br/>
 ![imagen](./images/respuesta-stats.jpg)
 
 
