@@ -48,7 +48,6 @@ public class ProspectController {
 				isMutant = prospectService.mainService(human);
 				human.setMutant(isMutant);
 				human.setId(human.hexIdGenerator());
-				System.out.println(human);
 				humanRepository.save(human);
 				
 
