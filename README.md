@@ -39,6 +39,9 @@ Para estos casos se activa una búsqueda extendida que permite, si se ha encontr
 Para la persistencia el uso de MongoDB nos permite una fácil configuración, alto tiempo de respuesta y está disponible cross platform por lo que es muy versátil, nos valemos de la opción que provee el motor de utilizar el guardado en modo ```"Upsert"``` el cual realiza un update en caso de existir el registro o un insert en caso de no existir, validando automáticamente la no duplicidad de registros y cumpliendo de este modo con el requisito de almacenar solo 1 regístro por individuo.<br/>
 MongoDB nos pide para tal fin que el registro tenga un id el cual generamos a partir de un Hash hexadecimal que es único por individuo a testear ya que se genera a partir del código del ADN evitando que si hay múltiples request de una misma secuencia estas sean almacenadas, se evaluó guardar los hashes de los request ya consultados en un HashTable para evitar la consulta al algorítmo pero se descartó en principio ya que sería necesario tener en memoria tantos hashes como objetos en la bbdd, quizás en un futuro se pueda avanzar en crear una caché de Hashes en otro componente externo o servicio que se pueda consultar antes de avanzar hacia el algorítmo.<br/><br/>
 
+#### Publicación de servicios
+- [Endpoint mutante](http://35.199.98.123:8080/ml/mutant/).
+- [Endpoint estadísticas](http://35.199.98.123:8080/ml/stats)
 
 #### Code Coverage
 Se utilizaron 2 Herramientas de de code coverage, por un lado el plugin de JUnit para ir ejecutando y consultando en tiempo de desarrollo la cobertura de cada Test y por otro lado se adjunta el plugin Jacoco que está incluído en el pom del proyecto de modo que quien desee puede correrlo sin necesidad de un IDE de desarrollo, solo necesita tener instalado Maven y el servicio de MongoDB levantado (en nuestro caso la instalación utiliza los datos default de puerto 27017 y se agregaron los siguientes datos: usr:”admin”, pwd:”admin” y la bbdd:”mutants”, de todas formas es configurable desde el archivo src/main/resources/application.properties).<br/>
@@ -78,6 +81,8 @@ Los resultados de las corridas se adjuntan en las siguientes imágenes:<br/>
 ##### Validadores y Procesador:
 
 ![imagen](./images/Validators_Processors.jpg)
+
+
 
 #### Tests de carga
 Con la herramienta RESTful Stress se hizo una prueba de 10000 (diez mil iteraciones) con ADN no Mutante el cual es nuestro peor escenario ya que recorre todo el algorítmo, obteniendo un tiempo promedio de respuesta de 5 milisegundos, al igual que para el servicio "stats" como se aprecia a continuación:<br/><br/>
