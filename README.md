@@ -17,9 +17,9 @@ API REST desplegada en contenedor web y persistencia en BBDD no SQL.<br/><br/>
 ##### Sistema operativo: 
 Windows Server 2012R2  (X64) – 2CPU Virtuales - 4Gb de RAM<br/><br/>
 ##### Servidor Web: 
-Apache Tomcat versión 8.5.69 <br/><br/>
+[Apache Tomcat versión 8.5.69](https://tomcat.apache.org/download-80.cgi) <br/><br/>
 ##### Base de datos: 
-MongoDB 3.4 (No es la última pero si la que soporta el server Windows Server 2012R2)<br/><br/>
+[MongoDB 3.4](https://www.mongodb.com/try/download/community) (No es la última pero si la que soporta el server Windows Server 2012R2)<br/><br/>
 ##### IDE de desarrollo: 
 Eclipse 2019-12.<br/><br/>
 ##### Herramientas: 
@@ -40,11 +40,13 @@ Otro aspecto que se tiene en cuenta es los casos en que la matríz tenga dimensi
 
 #### Code Coverage
 Se utilizaron 2 Herramientas de de code coverage, por un lado el plugin de JUnit para ir ejecutando y consultando en tiempo de desarrollo la cobertura de cada Test y por otro lado se adjunta el plugin Jacoco que está incluído en el pom del proyecto de modo que quien desee puede correrlo sin necesidad de un IDE de desarrollo, solo necesita tener instalado Maven y el servicio de MongoDB levantado (en nuestro caso la instalación utiliza los datos default de puerto 27017 y se agregaron los siguientes datos: usr:”admin”, pwd:”admin”, de todas formas es configurable desde el archivo src/main/resources/application.properties).
-Para tal fin, ejecutar en el path raíz del proyecto donde se ubica el archivo pom el siguiente comando:
-mvn clean test jacoco:report
+Para tal fin, ejecutar en el path raíz del proyecto donde se ubica el archivo pom el siguiente comando:<br/>
+```"mvn clean test jacoco:report" ```  <br/> 
 El reporte se generará en la carpeta target/site/Jacoco
 Tener en cuenta que para ejecutar el reporte se debe cambiar dentro del pom en la siguiente entrada de Surefire
-la opción “<skipTests>true</skipTests>” por “<skipTests>false</skipTests>”
+la opción ``` “<skipTests>true</skipTests>” por “<skipTests>false</skipTests>”``` de modo que quede así:
+<br/>
+```
 <plugin>
   <groupId>org.apache.maven.plugins</groupId>
   <artifactId>maven-surefire-plugin</artifactId>
@@ -52,7 +54,7 @@ la opción “<skipTests>true</skipTests>” por “<skipTests>false</skipTests>
 	<skipTests>false</skipTests>
   </configuration>
 </plugin>
-
+```
 Los resultados de las corridas se adjuntan en las siguientes imágenes:
 ##### Code Coverage
 JUnit:<br/>
