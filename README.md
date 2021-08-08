@@ -79,5 +79,15 @@ Los resultados de las corridas se adjuntan en las siguientes imágenes:<br/>
 
 ![imagen](./images/Validators_Processors.jpg)
 
-
+#### Tests de carga
+Con la herramienta RESTful Stress se hizo una prueba de 10000 (diez mil iteraciones) con ADN no Mutante el cual es nuestro peor escenario ya que recorre todo el algorítmo, obteniendo un tiempo promedio de respuesta de 5 milisegundos como se aprecia a continuación:<br/><br/>
+##### Input
+![imagen](./images/input-RESTStress.jpg)
+<br/>
+##### Estadísticas
+![imagen](./images/RESTStress-Stats.jpg)
+<br/>
+##### Persistencia único regístro
+![imagen](./images/mongo-Unique.jpg)
+<br/><br/>
 
