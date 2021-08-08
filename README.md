@@ -61,6 +61,11 @@ Con respuesta 200 OK cuando es humano<br/>
 Con respuesta 403 Forbidden cuando es mutante<br/>
 ![imagen](./images/respuesta-mutant.jpg)
 
+Para servicio /stats se utiliza GET y el servicio responde con un Json<br/>
+![imagen](./images/respuesta-stats.jpg)
+
+
+
 
 #### Code Coverage
 Se utilizaron 2 Herramientas de de code coverage, por un lado el plugin de JUnit para ir ejecutando y consultando en tiempo de desarrollo la cobertura de cada Test y por otro lado se adjunta el plugin Jacoco que está incluído en el pom del proyecto de modo que quien desee puede correrlo sin necesidad de un IDE de desarrollo, solo necesita tener instalado Maven y el servicio de MongoDB levantado (en nuestro caso la instalación utiliza los datos default de puerto 27017 y se agregaron los siguientes datos: usr:”admin”, pwd:”admin” y la bbdd:”mutants”, de todas formas es configurable desde el archivo src/main/resources/application.properties).<br/>
