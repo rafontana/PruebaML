@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProspectService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ml</a> &gt; <a href="index.source.html" class="el_package">com.mercadolibre.prueba.service</a> &gt; <span class="el_source">ProspectService.java</span></div><h1>ProspectService.java</h1><pre class="source lang-java linenums">package com.mercadolibre.prueba.service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.mercadolibre.prueba.entidades.Human;
+import com.mercadolibre.prueba.errores.MainServiceException;
+import com.mercadolibre.prueba.errores.ProcessorException;
+import com.mercadolibre.prueba.errores.ValidatorException;
+import com.mercadolibre.prueba.processors.ToUppercaseProcessor;
+import com.mercadolibre.prueba.utils.MutantConst;
+import com.mercadolibre.prueba.utils.Position;
+import com.mercadolibre.prueba.utils.Status;
+import com.mercadolibre.prueba.validators.DNAAllowedTypesValidator;
+import com.mercadolibre.prueba.validators.MinLengthValidator;
+import com.mercadolibre.prueba.validators.SequenceLengthValidator;
+
+@Service
+
+<span class="fc" id="L29">public class ProspectService {</span>
+
+	@Autowired
+	Status status;
+	@Autowired
+	SequenceLengthValidator sequenceLengthValidator;
+	@Autowired
+	MinLengthValidator minLengthValidator;
+	@Autowired
+	ToUppercaseProcessor toUppercaseProcessor;
+	@Autowired
+	DNAAllowedTypesValidator dNAAllowedTypesValidator;
+
+	private long occurrencesAccumulator;
+
+	/**
+	 * mainService Servicio principal
+	 * &lt;p&gt;
+	 * 
+	 * @param human instance of Human
+	 */
+	public boolean mainService(Human human) throws MainServiceException {
+
+
+		try {
+			// Validaciones
+			// Largo de cada secuencia sean iguales
+<span class="fc bfc" id="L56" title="All 2 branches covered.">			if (!sequenceLengthValidator.validate(human)) {</span>
+<span class="fc" id="L57">				throw new MainServiceException(&quot;Unequal dna dimension chain&quot;);</span>
+			}
+
+			// cantidad de sequencias mayor a 4
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">			if (!minLengthValidator.validate(human)) {</span>
+<span class="nc" id="L62">				throw new MainServiceException(&quot;Short dna chain&quot;);</span>
+			}
+			// pasa a Mayusculas para matchear pattern
+<span class="fc" id="L65">			toUppercaseProcessor.process(human);// pasa a mayusculas</span>
+
+			// valida que solo sean A C T G
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">			if (!dNAAllowedTypesValidator.validate(human)) {</span>
+<span class="nc" id="L69">				throw new MainServiceException(&quot;Not A C T G Types&quot;);</span>
+			}
+
+			// inicializa Status y ocurrencias
+<span class="fc" id="L73">			status.setConditionReached(false);</span>
+<span class="fc" id="L74">			occurrencesAccumulator = 0;</span>
+<span class="fc" id="L75">			return isMutant(human.getDna());</span>
+
+<span class="nc" id="L77">		} catch (ProcessorException | ValidatorException ex) {</span>
+
+<span class="nc" id="L79">			Logger.getLogger(ProspectService.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L80">			throw new MainServiceException(&quot;Exception in Main Service: &quot; + ex.getMessage());</span>
+
+		}
+
+	}
+
+	/**
+	 * Main method isMutant
+	 * &lt;p&gt;
+	 * 
+	 * @param dna of type String[] represents dna sequence
+	 */
+	public boolean isMutant(String[] dna) { // ORQUESTA TODAS LAS OPERACIONES
+
+		// 1 - PROCESO ROWS
+<span class="fc" id="L95">		patternsChecker(dna);</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">		if (status.isConditionReached())</span>
+<span class="fc" id="L97">			return true;</span>
+
+		// 2 - PROCESO COLS
+<span class="fc" id="L100">		String[] cols = retrieveColumns(dna);</span>
+<span class="fc" id="L101">		patternsChecker(cols);// Pasando cols</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">		if (status.isConditionReached())</span>
+<span class="fc" id="L103">			return true;</span>
+
+		// 3 - DEFINO MATRIZ
+<span class="fc" id="L106">		char[][] matrix = defineMatrix(dna);</span>
+<span class="fc" id="L107">		int size = matrix.length;</span>
+<span class="fc" id="L108">		String[] param = new String[1];</span>
+
+		// 4 - PROCESO DIAGONAL MAYOR DE IZQ A DERECHA
+<span class="fc" id="L111">		List&lt;Position&gt; majorDiagonalLeftToRight = diagonalLeftToRight(size);</span>
+<span class="fc" id="L112">		String diagonalLeftToRight = retrieveFromMatrix(majorDiagonalLeftToRight, matrix);</span>
+<span class="fc" id="L113">		param[0] = diagonalLeftToRight;</span>
+<span class="fc" id="L114">		patternsChecker(param);</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">		if (status.isConditionReached())</span>
+<span class="nc" id="L116">			return true;</span>
+
+		// 5 - PROCESO DIAGONALES DERIVADAS DE LA MAYOR DE IZQ A DERECHA
+<span class="fc" id="L119">		procesLeftToRightRight(majorDiagonalLeftToRight, matrix);</span>
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">		if (status.isConditionReached())</span>
+<span class="nc" id="L121">			return true;</span>
+
+<span class="fc" id="L123">		procesLeftToRightDown(majorDiagonalLeftToRight, matrix);</span>
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">		if (status.isConditionReached())</span>
+<span class="nc" id="L125">			return true;</span>
+
+		// 6 - PROCESO DIAGONAL MAYOR DE DERECHA A IZQ
+<span class="fc" id="L128">		List&lt;Position&gt; majorDiagonaliagonalRightToLeft = diagonalRightToLeft(size);</span>
+<span class="fc" id="L129">		String diagonalRightToLeft = retrieveFromMatrix(majorDiagonaliagonalRightToLeft, matrix);</span>
+<span class="fc" id="L130">		param[0] = diagonalRightToLeft;</span>
+<span class="fc" id="L131">		patternsChecker(param);</span>
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">		if (status.isConditionReached())</span>
+<span class="nc" id="L133">			return true;</span>
+
+		// 7 - PROCESO DIAGONALES DERIVADAS DE LA MAYOR DE DERECHA A IZQ
+<span class="fc" id="L136">		procesRightToLeftLeft(majorDiagonaliagonalRightToLeft, matrix);</span>
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">		if (status.isConditionReached())</span>
+<span class="nc" id="L138">			return true;</span>
+
+<span class="fc" id="L140">		procesRightToLeftDown(majorDiagonaliagonalRightToLeft, matrix);</span>
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">		if (status.isConditionReached())</span>
+<span class="nc" id="L142">			return true;</span>
+
+<span class="fc" id="L144">		return false;</span>
+	}
+
+	private void patternsChecker(String[] dna) {
+<span class="fc" id="L148">		int dnaLength = dna[0].length();</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">		boolean activateExtendedSearch = (dnaLength &gt;= MutantConst.MIN_EXTENDED_LENGTH);</span>
+
+<span class="fc" id="L151">		Pattern pattern = Pattern.compile(MutantConst.PATTERN_AAAA);</span>
+<span class="fc" id="L152">		List&lt;String&gt; list = Arrays.stream(dna).filter(pattern.asPredicate()).map(x -&gt; new String(x))</span>
+<span class="fc" id="L153">				.collect(Collectors.toList());</span>
+<span class="fc" id="L154">		occurrencesAccumulator += list.size();</span>
+<span class="pc bpc" id="L155" title="1 of 2 branches missed.">		if (testStatus()) {</span>
+<span class="nc" id="L156">			return;</span>
+		}
+<span class="fc bfc" id="L158" title="All 2 branches covered.">		if (activateExtendedSearch) {</span>
+<span class="fc" id="L159">			int res = list.size();</span>
+<span class="pc bpc" id="L160" title="1 of 4 branches missed.">			if (res == MutantConst.PATTERNS_MIN_VALID_OCCURRENCE &amp;&amp; dnaLength &gt;= MutantConst.MIN_EXTENDED_LENGTH) {</span>
+<span class="fc" id="L161">				extendedSearch(list.get(0), MutantConst.PATTERN_AAAA);</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">				if (testStatus()) {</span>
+<span class="fc" id="L163">					return;</span>
+				}
+
+			}
+		}
+
+<span class="fc" id="L169">		pattern = Pattern.compile(MutantConst.PATTERN_CCCC);</span>
+<span class="fc" id="L170">		list = Arrays.stream(dna).filter(pattern.asPredicate()).map(x -&gt; new String(x)).collect(Collectors.toList());</span>
+<span class="fc" id="L171">		occurrencesAccumulator += list.size();</span>
+
+<span class="pc bpc" id="L173" title="1 of 2 branches missed.">		if (testStatus()) {</span>
+<span class="nc" id="L174">			return;</span>
+		}
+
+<span class="fc bfc" id="L177" title="All 2 branches covered.">		if (activateExtendedSearch) {</span>
+<span class="fc" id="L178">			int res = list.size();</span>
+<span class="pc bpc" id="L179" title="1 of 4 branches missed.">			if (res == MutantConst.PATTERNS_MIN_VALID_OCCURRENCE &amp;&amp; dnaLength &gt;= MutantConst.MIN_EXTENDED_LENGTH) {</span>
+<span class="fc" id="L180">				extendedSearch(list.get(0), MutantConst.PATTERN_CCCC);</span>
+<span class="pc bpc" id="L181" title="1 of 2 branches missed.">				if (testStatus()) {</span>
+<span class="fc" id="L182">					return;</span>
+				}
+
+			}
+		}
+
+<span class="fc" id="L188">		pattern = Pattern.compile(MutantConst.PATTERN_TTTT);</span>
+<span class="fc" id="L189">		list = Arrays.stream(dna).filter(pattern.asPredicate()).map(x -&gt; new String(x)).collect(Collectors.toList());</span>
+<span class="fc" id="L190">		occurrencesAccumulator += list.size();</span>
+
+<span class="pc bpc" id="L192" title="1 of 2 branches missed.">		if (testStatus()) {</span>
+<span class="nc" id="L193">			return;</span>
+		}
+<span class="fc bfc" id="L195" title="All 2 branches covered.">		if (activateExtendedSearch) {</span>
+<span class="fc" id="L196">			int res = list.size();</span>
+<span class="pc bpc" id="L197" title="1 of 4 branches missed.">			if (res == MutantConst.PATTERNS_MIN_VALID_OCCURRENCE &amp;&amp; dnaLength &gt;= MutantConst.MIN_EXTENDED_LENGTH) {</span>
+<span class="fc" id="L198">				extendedSearch(list.get(0), MutantConst.PATTERN_TTTT);</span>
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">				if (testStatus()) {</span>
+<span class="fc" id="L200">					return;</span>
+				}
+			}
+		}
+
+<span class="fc" id="L205">		pattern = Pattern.compile(MutantConst.PATTERN_GGGG);</span>
+<span class="fc" id="L206">		list = Arrays.stream(dna).filter(pattern.asPredicate()).map(x -&gt; new String(x)).collect(Collectors.toList());</span>
+<span class="fc" id="L207">		occurrencesAccumulator += list.size();</span>
+
+<span class="fc bfc" id="L209" title="All 2 branches covered.">		if (testStatus()) {</span>
+<span class="fc" id="L210">			return;</span>
+		}
+
+<span class="fc bfc" id="L213" title="All 2 branches covered.">		if (activateExtendedSearch) {</span>
+<span class="fc" id="L214">			int res = list.size();</span>
+<span class="pc bpc" id="L215" title="2 of 4 branches missed.">			if (res == MutantConst.PATTERNS_MIN_VALID_OCCURRENCE &amp;&amp; dnaLength &gt;= MutantConst.MIN_EXTENDED_LENGTH) {</span>
+<span class="fc" id="L216">				extendedSearch(list.get(0), MutantConst.PATTERN_GGGG);</span>
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">				if (testStatus()) {</span>
+<span class="fc" id="L218">					return;</span>
+				}
+
+			}
+
+		}
+<span class="fc" id="L224">	}</span>
+
+	private void extendedSearch(String content, String extPattern) {
+<span class="fc" id="L227">		int pos = content.indexOf(extPattern);</span>
+<span class="pc bpc" id="L228" title="1 of 2 branches missed.">		if (content.length() - (pos + MutantConst.MIN_SEQUENCE_LENGTH) &gt;= MutantConst.MIN_SEQUENCE_LENGTH) {</span>
+<span class="fc" id="L229">			String[] subStringDNA = new String[1];</span>
+<span class="fc" id="L230">			subStringDNA[0] = content.substring(pos + MutantConst.MIN_SEQUENCE_LENGTH, content.length());</span>
+<span class="fc" id="L231">			Pattern pattern = Pattern.compile(extPattern);</span>
+<span class="fc" id="L232">			List&lt;String&gt; list = Arrays.stream(subStringDNA).filter(pattern.asPredicate()).map(x -&gt; new String(x))</span>
+<span class="fc" id="L233">					.collect(Collectors.toList());</span>
+<span class="fc" id="L234">			occurrencesAccumulator += list.size();</span>
+		}
+<span class="fc" id="L236">	}</span>
+
+	private boolean testStatus() {
+<span class="fc bfc" id="L239" title="All 2 branches covered.">		if (occurrencesAccumulator &gt;= MutantConst.PATTERNS_COUNT) {</span>
+<span class="fc" id="L240">			status.setConditionReached(true);</span>
+<span class="fc" id="L241">			return true;</span>
+		}
+<span class="fc" id="L243">		return false;</span>
+	}
+
+	private String[] retrieveColumns(String[] dna) {
+<span class="fc" id="L247">		String[] cols = new String[dna.length];</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">		for (int i = 0; i &lt; dna.length; i++) {</span>
+<span class="fc" id="L249">			cols[i] = processColumns(dna, i);</span>
+		}
+<span class="fc" id="L251">		return cols;</span>
+	}
+
+	private String processColumns(String[] dna, int pos) {
+<span class="fc" id="L255">		List&lt;Character&gt; lista = Arrays.stream(dna).map(x -&gt; x.charAt(pos)).collect(Collectors.toList());</span>
+
+<span class="fc" id="L257">		StringBuilder builder = new StringBuilder();</span>
+<span class="fc" id="L258">		lista.forEach(ch -&gt; builder.append(ch));</span>
+<span class="fc" id="L259">		return builder.toString();</span>
+	}
+
+	private char[][] defineMatrix(String[] dna) {
+<span class="fc" id="L263">		int size = dna.length;</span>
+<span class="fc" id="L264">		char[][] matrix = new char[size][size];</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">		for (int row = 0; row &lt; size; row++) {</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">			for (int col = 0; col &lt; size; col++) {</span>
+<span class="fc" id="L267">				matrix[row][col] = dna[row].charAt(col);</span>
+			}
+		}
+<span class="fc" id="L270">		return matrix;</span>
+
+	}
+
+	private void procesLeftToRightRight(List&lt;Position&gt; positions, char[][] matrix) {
+<span class="fc bfc" id="L275" title="All 2 branches covered.">		if (positions.size() == MutantConst.MIN_SEQUENCE_LENGTH) {</span>
+<span class="fc" id="L276">			return;</span>
+		}
+<span class="fc" id="L278">		List&lt;Position&gt; diSubUp = copyPositions(positions.subList(0, positions.size() - 1));</span>
+<span class="fc" id="L279">		String anotherRight = retrieveFromMatrix(incrementCol(diSubUp), matrix);</span>
+<span class="fc" id="L280">		String[] param = new String[1];</span>
+<span class="fc" id="L281">		param[0] = anotherRight;</span>
+<span class="fc" id="L282">		patternsChecker(param);</span>
+<span class="pc bpc" id="L283" title="1 of 2 branches missed.">		if (status.isConditionReached())</span>
+<span class="nc" id="L284">			return;</span>
+<span class="fc" id="L285">		procesLeftToRightRight(diSubUp, matrix);</span>
+<span class="fc" id="L286">	}</span>
+
+	private void procesLeftToRightDown(List&lt;Position&gt; positions, char[][] matrix) {
+<span class="fc bfc" id="L289" title="All 2 branches covered.">		if (positions.size() == MutantConst.MIN_SEQUENCE_LENGTH) {</span>
+<span class="fc" id="L290">			return;</span>
+		}
+<span class="fc" id="L292">		List&lt;Position&gt; diSubDown = copyPositions(positions.subList(0, positions.size() - 1));</span>
+<span class="fc" id="L293">		String anotherDown = retrieveFromMatrix(incrementRow(diSubDown), matrix);</span>
+<span class="fc" id="L294">		String[] param = new String[1];</span>
+<span class="fc" id="L295">		param[0] = anotherDown;</span>
+<span class="fc" id="L296">		patternsChecker(param);</span>
+<span class="pc bpc" id="L297" title="1 of 2 branches missed.">		if (status.isConditionReached())</span>
+<span class="nc" id="L298">			return;</span>
+<span class="fc" id="L299">		procesLeftToRightDown(diSubDown, matrix);</span>
+<span class="fc" id="L300">	}</span>
+
+	private void procesRightToLeftLeft(List&lt;Position&gt; positions, char[][] matrix) {
+<span class="fc bfc" id="L303" title="All 2 branches covered.">		if (positions.size() == MutantConst.MIN_SEQUENCE_LENGTH) {</span>
+<span class="fc" id="L304">			return;</span>
+		}
+<span class="fc" id="L306">		List&lt;Position&gt; diSubLeft = copyPositions(positions.subList(0, positions.size() - 1));</span>
+<span class="fc" id="L307">		String anotherLeft = retrieveFromMatrix(decrementCol(diSubLeft), matrix);</span>
+<span class="fc" id="L308">		String[] param = new String[1];</span>
+<span class="fc" id="L309">		param[0] = anotherLeft;</span>
+<span class="fc" id="L310">		patternsChecker(param);</span>
+<span class="pc bpc" id="L311" title="1 of 2 branches missed.">		if (status.isConditionReached())</span>
+<span class="nc" id="L312">			return;</span>
+<span class="fc" id="L313">		procesRightToLeftLeft(diSubLeft, matrix);</span>
+<span class="fc" id="L314">	}</span>
+
+	private void procesRightToLeftDown(List&lt;Position&gt; positions, char[][] matrix) {
+<span class="fc bfc" id="L317" title="All 2 branches covered.">		if (positions.size() == MutantConst.MIN_SEQUENCE_LENGTH) {</span>
+<span class="fc" id="L318">			return;</span>
+		}
+<span class="fc" id="L320">		List&lt;Position&gt; diSubDown = copyPositions(positions.subList(0, positions.size() - 1));</span>
+<span class="fc" id="L321">		String anotherDown = retrieveFromMatrix(incrementRow(diSubDown), matrix);</span>
+<span class="fc" id="L322">		String[] param = new String[1];</span>
+<span class="fc" id="L323">		param[0] = anotherDown;</span>
+<span class="fc" id="L324">		patternsChecker(param);</span>
+<span class="pc bpc" id="L325" title="1 of 2 branches missed.">		if (status.isConditionReached())</span>
+<span class="nc" id="L326">			return;</span>
+<span class="fc" id="L327">		procesRightToLeftDown(diSubDown, matrix);</span>
+<span class="fc" id="L328">	}</span>
+
+	private List&lt;Position&gt; incrementCol(List&lt;Position&gt; positions) {
+<span class="fc" id="L331">		positions.stream().forEach(p -&gt; ((Position) p).incrementCol());</span>
+<span class="fc" id="L332">		return positions;</span>
+	}
+
+	private List&lt;Position&gt; incrementRow(List&lt;Position&gt; positions) {
+<span class="fc" id="L336">		positions.stream().forEach(p -&gt; ((Position) p).incrementRow());</span>
+<span class="fc" id="L337">		return positions;</span>
+	}
+
+	private List&lt;Position&gt; decrementCol(List&lt;Position&gt; positions) {
+<span class="fc" id="L341">		positions.stream().forEach(p -&gt; ((Position) p).decrementCol());</span>
+<span class="fc" id="L342">		return positions;</span>
+	}
+
+
+	private String retrieveFromMatrix(List&lt;Position&gt; positions, char[][] matrix) {
+<span class="fc" id="L347">		StringBuilder builder = new StringBuilder();</span>
+<span class="fc" id="L348">		positions.stream().forEach(p -&gt; builder.append(matrix[p.getRow()][p.getCol()]));</span>
+<span class="fc" id="L349">		return builder.toString();</span>
+
+	}
+
+	private List&lt;Position&gt; copyPositions(List&lt;Position&gt; positions) {
+<span class="fc" id="L354">		ArrayList&lt;Position&gt; copiedPositions = new ArrayList&lt;Position&gt;();</span>
+<span class="fc" id="L355">		Iterator&lt;Position&gt; it = positions.iterator();</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">		while (it.hasNext()) {</span>
+<span class="fc" id="L357">			Position a = it.next();</span>
+<span class="fc" id="L358">			Position b = new Position();</span>
+<span class="fc" id="L359">			b.setCol(a.getCol());</span>
+<span class="fc" id="L360">			b.setRow(a.getRow());</span>
+<span class="fc" id="L361">			copiedPositions.add(b);</span>
+<span class="fc" id="L362">		}</span>
+<span class="fc" id="L363">		return copiedPositions;</span>
+	}
+
+	private ArrayList&lt;Position&gt; diagonalLeftToRight(int size) {
+
+<span class="fc" id="L368">		ArrayList&lt;Position&gt; positions = new ArrayList&lt;Position&gt;();</span>
+<span class="fc bfc" id="L369" title="All 2 branches covered.">		for (int i = 0; i &lt; size; i++) {</span>
+<span class="fc" id="L370">			Position position = new Position();</span>
+<span class="fc" id="L371">			position.setCol(i);</span>
+<span class="fc" id="L372">			position.setRow(i);</span>
+<span class="fc" id="L373">			positions.add(position);</span>
+		}
+<span class="fc" id="L375">		return positions;</span>
+	}
+
+	private ArrayList&lt;Position&gt; diagonalRightToLeft(int size) {
+<span class="fc" id="L379">		ArrayList&lt;Position&gt; positions = new ArrayList&lt;Position&gt;();</span>
+<span class="fc" id="L380">		int start = size - 1;</span>
+<span class="fc bfc" id="L381" title="All 2 branches covered.">		for (int i = 0; i &lt; size; i++) {</span>
+<span class="fc" id="L382">			Position position = new Position();</span>
+<span class="fc" id="L383">			position.setCol(start - i);</span>
+<span class="fc" id="L384">			position.setRow(i);</span>
+<span class="fc" id="L385">			positions.add(position);</span>
+		}
+<span class="fc" id="L387">		return positions;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
