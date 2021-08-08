@@ -7,11 +7,10 @@ El siguiente documento forma parte de la prueba examen “Mutantes” de Mercado
 
 
 #### Análisis
-El ejercicio se centra en poder realizar la búsqueda de un mínimo de 2 ocurrencias de 4 letras iguales a la que llamaremos “patrón” o “patrones” que provienen de 4 diferentes tipos de  letras (A,C,T,G), se pueden considerar entonces 4 posibles patrones (AAAA,CCCC,TTTT,GGGG).
-Se menciona que la matriz objetivo es de (N x N) por lo que en principio nuestra consideración es que puede crecer de dimensión siempre teniendo tantas filas como columnas. 
-También relata que la dirección en que se pueden ubicar estos patrones es de forma horizontal, vertical y oblicua de modo que se deben recorrer las columnas, las filas y diagonales.
-Para la realización del algoritmo de búsqueda primero estudiamos las tecnologías a utilizar, en nuestro caso particular hemos tomado las siguientes decisiones:<br/><br/>
-Lenguaje de desarrollo: Java versión 1.8 (Permite la programación funcional, implementa las características de lambdas y streams que hacen posibles operaciones masivas con tiempos de ejecución más veloces y con menos líneas de código)<br/><br/>
+
+El ejercicio se centra en poder realizar la búsqueda de un mínimo de 2 ocurrencias de 4 letras iguales a la que llamaremos “patrón” o “patrones” que provienen de 4 diferentes tipos de letras (A,C,T,G), se pueden considerar entonces 4 posibles patrones (AAAA,CCCC,TTTT,GGGG).<br/>Se menciona que la matriz objetivo es de (N x N) por lo que en principio nuestra consideración es que puede crecer de dimensión siempre teniendo tantas filas como columnas. <br/>También relata que la dirección en que se pueden ubicar estos patrones es de forma horizontal, vertical y oblicua de modo que se deben recorrer las columnas, las filas y diagonales. <br/>Para la realización del algoritmo de búsqueda primero estudiamos las tecnologías a utilizar, en nuestro caso particular hemos tomado las siguientes decisiones:<br/><br/>
+##### Lenguaje de desarrollo: 
+Java versión 1.8 (Permite la programación funcional, implementa las características de lambdas y streams que hacen posibles operaciones masivas con tiempos de ejecución más veloces y con menos líneas de código)<br/><br/>
 ##### Arquitectura: 
 API REST desplegada en contenedor web y persistencia en BBDD no SQL.<br/><br/>
 ##### Sistema operativo: 
@@ -58,11 +57,11 @@ la opción ``` “<skipTests>true</skipTests>” por “<skipTests>false</skipTe
 </plugin>
 ```
 Los resultados de las corridas se adjuntan en las siguientes imágenes:
-##### Code Coverage
-JUnit:<br/>
+##### Resultados
+###### JUnit:<br/>
 ![imagen](./images/JUnitCoverage.jpg)<br/><br/>
-Jacoco:<br/>
-![imagen](./images/jacoco.jpg)<br/>
+###### Jacoco:<br/>
+![imagen](./images/jacoco.jpg)<br/><br/>
 
 #### Vista General del sistema
 ##### Diagrama de clases:<br/><br/>
@@ -71,8 +70,5 @@ Jacoco:<br/>
 ##### Validadores y Procesador:<br/><br/>
 ![imagen](./images/Validators_Processors.jpg)<br/><br/>
 
-Jacoco:<br/>
-![imagen](./images/jacoco.jpg)<br/>
-![imagen](./images/letra1.jpg)
-![imagen](./images/letra2.jpg)
+
 
