@@ -7,10 +7,9 @@
 	- Publicación de servicios	
 	- Como ejecutar la aplicación
 	- Code Coverage
-	- Vista General del sistema
 	- Vista General del sistema	
 	- Tests de carga
-	- Conclusionesa
+	- Conclusiones
 <br/><br/>
 #### Letra del problema 
 
