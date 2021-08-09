@@ -11,7 +11,7 @@
 	- Vista General del sistema	
 	- Tests de carga
 	- Conclusionesa
-
+<br/><br/>
 #### Letra del problema 
 
 ![imagen](./images/letra1.jpg)
