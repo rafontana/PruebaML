@@ -1,6 +1,18 @@
 ## PruebaML "Mutantes" exámen Mercadolibre.
 
-El siguiente documento forma parte de la prueba examen “Mutantes” de Mercadolibre, la misma plantea un ejercicio explicado en la siguiente letra: 
+- Tabla de contenidos
+	- Letra del problema
+	- Análisis
+	- Desarrollo
+	- Publicación de servicios	
+	- Como ejecutar la aplicación
+	- Code Coverage
+	- Vista General del sistema
+	- Vista General del sistema	
+	- Tests de carga
+	- Conclusionesa
+
+#### Letra del problema 
 
 ![imagen](./images/letra1.jpg)
 ![imagen](./images/letra2.jpg)
@@ -44,7 +56,7 @@ MongoDB nos pide para tal fin que el registro tenga un id el cual generamos a pa
 - [Endpoint estadísticas](http://35.199.98.123:8080/ml/stats)
 
 #### Como ejecutar la aplicación
-Descargar la herramienta  [Postman Canary](https://www.postman.com/downloads/canary/) desde este link.<br/><br/>
+Descargar la herramienta Postman Canary desde este [link](https://www.postman.com/downloads/canary/).<br/><br/>
 Ir a la opción new --> HttpRequest.<br/>
 1) Seleccionar Method ("POST" para /mutant/ y "GET" para /stats)<br/>
 2) Cargar Endpoint<br/>
