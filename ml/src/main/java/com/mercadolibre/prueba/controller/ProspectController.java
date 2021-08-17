@@ -52,10 +52,10 @@ public class ProspectController {
 				
 
 				if (isMutant) {
-					responseEntity = new ResponseEntity<>(HttpStatus.FORBIDDEN);
+					responseEntity = new ResponseEntity<>(HttpStatus.OK);
 					return responseEntity;
 				} else {
-					responseEntity = new ResponseEntity<>(HttpStatus.OK);
+					responseEntity = new ResponseEntity<>(HttpStatus.FORBIDDEN);
 					return responseEntity;
 				}
 			} catch (MainServiceException ex) {
