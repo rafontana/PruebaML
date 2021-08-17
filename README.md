@@ -66,10 +66,10 @@ Ir a la opción new --> HttpRequest.<br/>
 
 ![imagen](./images/postmanCarga.jpg)
 <br/><br/>
-Con respuesta 200 OK cuando es humano<br/>
+Con respuesta 200 OK cuando es mutante<br/>
 ![imagen](./images/respuesta-humano.jpg)
 
-Con respuesta 403 Forbidden cuando es mutante<br/>
+Con respuesta 403 Forbidden cuando es humano<br/>
 ![imagen](./images/respuesta-mutant.jpg)
 
 Para el servicio /stats se utiliza "GET" y el servicio responde con un Json <br/>
